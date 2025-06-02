@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Institute Program Selector</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2em;
+        max-width: 960px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      select {
+        margin-top: 1em;
+        padding: 0.5em;
+        width: 100%;
+        max-width: 400px;
+        font-size: 1rem;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+        padding: 0.4em 0.8em;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+      }
+      button:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+      button:disabled {
+        background-color: #ccc;
+        cursor: default;
+        color: #666;
+      }
+      h1,
+      h2 {
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        gap: 2em;
+        margin-top: 2em;
+        flex-wrap: wrap;
+      }
+      .programs-section,
+      .selected-section {
+        flex: 1 1 400px;
+        min-width: 280px;
+        background: #f9f9f9;
+        padding: 1em 1.5em;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+      .hidden {
+        display: none;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      #programList li,
+      #selectedProgramList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.3em 0.5em;
+        border-radius: 3px;
+        background: white;
+        margin: 0.25em 0;
+        font-size: 0.95rem;
+      }
+      #programList li .program-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .program-name {
+        font-weight: bold;
+        color: #222;
+      }
+      .institute-name {
+        font-size: 0.8rem;
+        color: #555;
+      }
+      #programList li button {
+        min-width: 60px;
+        padding: 0.2em 0.5em;
+        font-size: 0.85rem;
+        background-color: #28a745;
+      }
+      #programList li button:hover:not(:disabled) {
+        background-color: #218838;
+      }
+      .item-info {
+        display: flex;
+        align-items: center;
+        gap: 0.6em;
+        flex-wrap: nowrap;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .selected-institute {
+        background-color: #007bff;
+        color: white;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 3px;
+        user-select: none;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .selected-program-name {
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: visible;
+        min-width: 0;
+        flex-shrink: 1;
+        color: #222;
+      }
+      .btn-group {
+        display: flex;
+        gap: 0.3em;
+        flex-shrink: 0;
+      }
+      .btn-group button {
+        padding: 0.2em 0.6em;
+        font-size: 0.85rem;
+        min-width: 40px;
+        border-radius: 3px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+      .btn-group button:disabled {
+        cursor: default;
+        background-color: #ccc;
+        color: #666;
+      }
+      .btn-group button.remove-btn {
+        background-color: #dc3545;
+      }
+      .btn-group button.remove-btn:hover {
+        background-color: #c82333;
+      }
+      .btn-group button:hover:not(:disabled):not(.remove-btn) {
+        background-color: #0056b3;
+      }
+    </style> -->
+    <!-- Same as previous code -->
+    <!-- ONLY the CSS section is shown below to highlight the key changes -->
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2em;
+        max-width: 960px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      select {
+        margin-top: 1em;
+        padding: 0.5em;
+        width: 100%;
+        max-width: 400px;
+        font-size: 1rem;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+        padding: 0.4em 0.8em;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+      }
+      button:hover:not(:disabled) {
+        background-color: #0056b3;
+      }
+      button:disabled {
+        background-color: #ccc;
+        cursor: default;
+        color: #666;
+      }
+      h1,
+      h2 {
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        gap: 2em;
+        margin-top: 2em;
+        flex-wrap: wrap;
+      }
+      .programs-section,
+      .selected-section {
+        flex: 1 1 400px;
+        min-width: 280px;
+        background: #f9f9f9;
+        padding: 1em 1.5em;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+      .hidden {
+        display: none;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      #programList li,
+      #selectedProgramList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.3em 0.5em;
+        border-radius: 3px;
+        background: white;
+        margin: 0.25em 0;
+        font-size: 0.95rem;
+      }
+      .program-info,
+      .item-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 2px;
+      }
+      .program-name,
+      .selected-program-name {
+        font-weight: bold;
+        color: #222;
+      }
+      .institute-name,
+      .selected-institute {
+        font-size: 0.8rem;
+        color: #555;
+      }
+      .selected-institute {
+        background-color: transparent;
+        font-weight: normal;
+        padding: 0;
+        border-radius: 0;
+      }
+      .btn-group {
+        display: flex;
+        gap: 0.3em;
+        flex-shrink: 0;
+      }
+      .btn-group button {
+        padding: 0.2em 0.6em;
+        font-size: 0.85rem;
+        min-width: 40px;
+        border-radius: 3px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+      .btn-group button:disabled {
+        cursor: default;
+        background-color: #ccc;
+        color: #666;
+      }
+      .btn-group button.remove-btn {
+        background-color: #dc3545;
+      }
+      .btn-group button.remove-btn:hover {
+        background-color: #c82333;
+      }
+      .btn-group button:hover:not(:disabled):not(.remove-btn) {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Select Group by Institute</h1>
+
+    <label for="institute">Choose an Institute:</label>
+    <select id="institute">
+      <option value="">-- Select Institute --</option>
+    </select>
+
+    <div class="container">
+      <section class="programs-section hidden" id="programsSection">
+        <h2>Programs Offered:</h2>
+        <ul id="programList"></ul>
+      </section>
+
+      <section class="selected-section hidden" id="selectedSection">
+        <h2>Selected Programs:</h2>
+        <ul id="selectedProgramList"></ul>
+        <div
+          id="downloadButtons"
+          class="hidden"
+          style="
+            margin-top: 1em;
+            display: flex;
+            gap: 1em;
+            justify-content: center;
+          "
+        >
+          <button onclick="downloadExcel()">Download as Excel</button>
+          <button onclick="downloadPDF()">Download as PDF</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      let data = {};
+      const instituteSelect = document.getElementById("institute");
+      const programList = document.getElementById("programList");
+      const programsSection = document.getElementById("programsSection");
+      const selectedSection = document.getElementById("selectedSection");
+      const selectedProgramList = document.getElementById(
+        "selectedProgramList"
+      );
+      const downloadButtons = document.getElementById("downloadButtons");
+
+      let selectedPrograms = [];
+
+      // Load data from external JSON
+      fetch("institute_program_data.json")
+        .then((response) => response.json())
+        .then((json) => {
+          data = json;
+          for (const institute in data) {
+            const option = document.createElement("option");
+            option.value = institute;
+            option.textContent = institute;
+            instituteSelect.appendChild(option);
+          }
+        });
+
+      // Show offered programs for selected institute
+      instituteSelect.addEventListener("change", () => {
+        renderOfferedPrograms(instituteSelect.value);
+      });
+
+      function renderOfferedPrograms(selectedInstitute) {
+        programList.innerHTML = "";
+
+        if (!selectedInstitute || !data[selectedInstitute]) {
+          programsSection.classList.add("hidden");
+          return;
+        }
+
+        data[selectedInstitute].forEach((program) => {
+          const li = document.createElement("li");
+
+          const programInfo = document.createElement("div");
+          programInfo.className = "program-info";
+
+          const programSpan = document.createElement("span");
+          programSpan.className = "program-name";
+          programSpan.textContent = program;
+
+          const instituteSpan = document.createElement("span");
+          instituteSpan.className = "institute-name";
+          instituteSpan.textContent = selectedInstitute;
+
+          programInfo.appendChild(programSpan);
+          programInfo.appendChild(instituteSpan);
+
+          const addRemoveBtn = document.createElement("button");
+          const isSelected = selectedPrograms.some(
+            (item) =>
+              item.institute === selectedInstitute && item.program === program
+          );
+          addRemoveBtn.textContent = isSelected ? "Remove" : "Add";
+          addRemoveBtn.style.backgroundColor = isSelected
+            ? "#dc3545"
+            : "#28a745";
+          addRemoveBtn.title = isSelected
+            ? "Remove from selected"
+            : "Add to selected";
+
+          addRemoveBtn.onclick = () => {
+            if (isSelected) {
+              selectedPrograms = selectedPrograms.filter(
+                (item) =>
+                  !(
+                    item.institute === selectedInstitute &&
+                    item.program === program
+                  )
+              );
+            } else {
+              selectedPrograms.push({ institute: selectedInstitute, program });
+            }
+            renderSelectedPrograms();
+            renderOfferedPrograms(selectedInstitute);
+            downloadButtons.classList.toggle(
+              "hidden",
+              selectedPrograms.length === 0
+            );
+          };
+
+          li.appendChild(programInfo);
+          li.appendChild(addRemoveBtn);
+          programList.appendChild(li);
+        });
+
+        programsSection.classList.remove("hidden");
+        selectedSection.classList.toggle(
+          "hidden",
+          selectedPrograms.length === 0
+        );
+        if (!selectedSection.classList.contains("hidden")) {
+          renderSelectedPrograms();
+        }
+      }
+
+      function renderSelectedPrograms() {
+        selectedProgramList.innerHTML = "";
+
+        selectedPrograms.forEach((item, index) => {
+          const li = document.createElement("li");
+
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "item-info";
+
+          const instSpan = document.createElement("span");
+          instSpan.className = "selected-institute";
+          instSpan.textContent = item.institute;
+
+          const progSpan = document.createElement("span");
+          progSpan.className = "selected-program-name";
+          progSpan.textContent = item.program;
+
+          infoDiv.appendChild(instSpan);
+          infoDiv.appendChild(progSpan);
+
+          const btnGroup = document.createElement("div");
+          btnGroup.className = "btn-group";
+
+          const upBtn = document.createElement("button");
+          upBtn.textContent = "↑";
+          upBtn.title = "Move Up";
+          upBtn.disabled = index === 0;
+          upBtn.onclick = () => {
+            if (index > 0) {
+              [selectedPrograms[index - 1], selectedPrograms[index]] = [
+                selectedPrograms[index],
+                selectedPrograms[index - 1],
+              ];
+              renderSelectedPrograms();
+            }
+          };
+
+          const downBtn = document.createElement("button");
+          downBtn.textContent = "↓";
+          downBtn.title = "Move Down";
+          downBtn.disabled = index === selectedPrograms.length - 1;
+          downBtn.onclick = () => {
+            if (index < selectedPrograms.length - 1) {
+              [selectedPrograms[index + 1], selectedPrograms[index]] = [
+                selectedPrograms[index],
+                selectedPrograms[index + 1],
+              ];
+              renderSelectedPrograms();
+            }
+          };
+
+          const removeBtn = document.createElement("button");
+          removeBtn.textContent = "Remove";
+          removeBtn.title = "Remove this program";
+          removeBtn.className = "remove-btn";
+          removeBtn.onclick = () => {
+            selectedPrograms.splice(index, 1);
+            renderSelectedPrograms();
+            renderOfferedPrograms(instituteSelect.value);
+            downloadButtons.classList.toggle(
+              "hidden",
+              selectedPrograms.length === 0
+            );
+            if (selectedPrograms.length === 0) {
+              selectedSection.classList.add("hidden");
+            }
+          };
+
+          btnGroup.appendChild(upBtn);
+          btnGroup.appendChild(downBtn);
+          btnGroup.appendChild(removeBtn);
+
+          li.appendChild(infoDiv);
+          li.appendChild(btnGroup);
+
+          selectedProgramList.appendChild(li);
+        });
+      }
+
+      function downloadExcel() {
+        const XLSX = window.XLSX;
+        if (selectedPrograms.length === 0) {
+          alert("No programs selected!");
+          return;
+        }
+        const ws_data = [["Institute", "Program"]];
+        selectedPrograms.forEach((item) => {
+          ws_data.push([item.institute, item.program]);
+        });
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, "Selected Programs");
+        XLSX.writeFile(wb, "selected_programs.xlsx");
+      }
+
+      function downloadPDF() {
+        if (selectedPrograms.length === 0) {
+          alert("No programs selected!");
+          return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("Selected Programs", 14, 22);
+        doc.setFontSize(12);
+        let y = 32;
+        selectedPrograms.forEach((item, i) => {
+          const line = `${i + 1}. Institute: ${item.institute}, Program: ${
+            item.program
+          }`;
+          doc.text(line, 14, y);
+          y += 8;
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+        doc.save("selected_programs.pdf");
+      }
+    </script>
+  </body>
+</html>
