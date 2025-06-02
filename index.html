@@ -5,7 +5,7 @@
     <title>Institute Program Selector</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- <style>
+    <style>
       body {
         font-family: Arial, sans-serif;
         margin: 2em;
@@ -13,13 +13,55 @@
         margin-left: auto;
         margin-right: auto;
       }
-      select {
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+
+      input[type="text"] {
         margin-top: 1em;
         padding: 0.5em;
         width: 100%;
         max-width: 400px;
         font-size: 1rem;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
       }
+
+      /* Hide the native select */
+      select#institute {
+        display: none;
+      }
+
+      /* Custom dropdown container */
+      #customDropdown {
+        max-width: 400px;
+        margin: 0.2em auto 0 auto;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        max-height: 150px;
+        overflow-y: auto;
+        background: white;
+        position: relative;
+        z-index: 1000;
+        box-sizing: border-box;
+        display: none;
+      }
+
+      #customDropdown .dropdown-item {
+        padding: 0.5em;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      #customDropdown .dropdown-item:hover {
+        background-color: #007bff;
+        color: white;
+      }
+
       button {
         cursor: pointer;
         border: none;
@@ -30,24 +72,24 @@
         font-size: 0.9rem;
         transition: background-color 0.2s;
       }
+
       button:hover:not(:disabled) {
         background-color: #0056b3;
       }
+
       button:disabled {
         background-color: #ccc;
         cursor: default;
         color: #666;
       }
-      h1,
-      h2 {
-        text-align: center;
-      }
+
       .container {
         display: flex;
         gap: 2em;
         margin-top: 2em;
         flex-wrap: wrap;
       }
+
       .programs-section,
       .selected-section {
         flex: 1 1 400px;
@@ -59,17 +101,22 @@
         max-height: 70vh;
         overflow-y: auto;
       }
+
       .hidden {
         display: none;
       }
+
       ul {
         list-style: none;
         padding: 0;
         margin: 0;
       }
+
+      /* Shared styles for both lists */
       #programList li,
       #selectedProgramList li {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
         padding: 0.3em 0.5em;
@@ -78,36 +125,40 @@
         margin: 0.25em 0;
         font-size: 0.95rem;
       }
-      #programList li .program-info {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .program-name {
-        font-weight: bold;
+
+      .program-name,
+      .selected-program-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-right: 0.5em;
+        font-weight: 700;
         color: #222;
       }
-      .institute-name {
-        font-size: 0.8rem;
-        color: #555;
-      }
-      #programList li button {
+
+      #programList li button,
+      .btn-group button {
         min-width: 60px;
         padding: 0.2em 0.5em;
         font-size: 0.85rem;
-        background-color: #28a745;
       }
-      #programList li button:hover:not(:disabled) {
-        background-color: #218838;
-      }
-      .item-info {
+
+      .btn-group {
         display: flex;
-        align-items: center;
-        gap: 0.6em;
-        flex-wrap: nowrap;
-        min-width: 0;
-        overflow: hidden;
+        gap: 0.3em;
+        flex-shrink: 0;
       }
+
+      .btn-group button.remove-btn {
+        background-color: #dc3545;
+      }
+
+      .btn-group button.remove-btn:hover {
+        background-color: #c82333;
+      }
+
       .selected-institute {
         background-color: #007bff;
         color: white;
@@ -118,186 +169,49 @@
         font-size: 0.85rem;
         flex-shrink: 0;
         white-space: nowrap;
+        margin-right: 0.5em;
       }
-      .selected-program-name {
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: visible;
-        min-width: 0;
-        flex-shrink: 1;
-        color: #222;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.3em;
-        flex-shrink: 0;
-      }
-      .btn-group button {
-        padding: 0.2em 0.6em;
-        font-size: 0.85rem;
-        min-width: 40px;
-        border-radius: 3px;
-        cursor: pointer;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        user-select: none;
-        transition: background-color 0.2s;
-      }
-      .btn-group button:disabled {
-        cursor: default;
-        background-color: #ccc;
-        color: #666;
-      }
-      .btn-group button.remove-btn {
-        background-color: #dc3545;
-      }
-      .btn-group button.remove-btn:hover {
-        background-color: #c82333;
-      }
-      .btn-group button:hover:not(:disabled):not(.remove-btn) {
-        background-color: #0056b3;
-      }
-    </style> -->
-    <!-- Same as previous code -->
-    <!-- ONLY the CSS section is shown below to highlight the key changes -->
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2em;
-        max-width: 960px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      select {
-        margin-top: 1em;
-        padding: 0.5em;
-        width: 100%;
-        max-width: 400px;
-        font-size: 1rem;
-      }
-      button {
-        cursor: pointer;
-        border: none;
-        background: #007bff;
-        color: white;
-        border-radius: 4px;
-        padding: 0.4em 0.8em;
-        font-size: 0.9rem;
-        transition: background-color 0.2s;
-      }
-      button:hover:not(:disabled) {
-        background-color: #0056b3;
-      }
-      button:disabled {
-        background-color: #ccc;
-        cursor: default;
-        color: #666;
-      }
-      h1,
-      h2 {
-        text-align: center;
-      }
-      .container {
-        display: flex;
-        gap: 2em;
-        margin-top: 2em;
-        flex-wrap: wrap;
-      }
-      .programs-section,
-      .selected-section {
-        flex: 1 1 400px;
-        min-width: 280px;
-        background: #f9f9f9;
-        padding: 1em 1.5em;
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        max-height: 70vh;
-        overflow-y: auto;
-      }
-      .hidden {
-        display: none;
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-      #programList li,
-      #selectedProgramList li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.3em 0.5em;
-        border-radius: 3px;
-        background: white;
-        margin: 0.25em 0;
-        font-size: 0.95rem;
-      }
-      .program-info,
       .item-info {
         display: flex;
-        flex-direction: column;
-        flex: 1;
-        gap: 2px;
+        align-items: center;
+        gap: 0.6em;
+        flex-wrap: nowrap;
+        min-width: 0;
+        overflow: hidden;
       }
-      .program-name,
-      .selected-program-name {
-        font-weight: bold;
-        color: #222;
-      }
-      .institute-name,
-      .selected-institute {
-        font-size: 0.8rem;
-        color: #555;
-      }
-      .selected-institute {
-        background-color: transparent;
-        font-weight: normal;
-        padding: 0;
-        border-radius: 0;
-      }
-      .btn-group {
-        display: flex;
-        gap: 0.3em;
-        flex-shrink: 0;
-      }
-      .btn-group button {
-        padding: 0.2em 0.6em;
-        font-size: 0.85rem;
-        min-width: 40px;
-        border-radius: 3px;
-        cursor: pointer;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        user-select: none;
-        transition: background-color 0.2s;
-      }
-      .btn-group button:disabled {
-        cursor: default;
-        background-color: #ccc;
-        color: #666;
-      }
-      .btn-group button.remove-btn {
-        background-color: #dc3545;
-      }
-      .btn-group button.remove-btn:hover {
-        background-color: #c82333;
-      }
-      .btn-group button:hover:not(:disabled):not(.remove-btn) {
-        background-color: #0056b3;
+
+      @media (max-width: 480px) {
+        #programList li,
+        #selectedProgramList li {
+          font-size: 0.85rem;
+        }
+        #programList li button,
+        .btn-group button {
+          font-size: 0.75rem;
+          min-width: 32px;
+          padding: 0.15em 0.4em;
+        }
+        .selected-institute {
+          font-size: 0.75rem;
+          padding: 1px 6px;
+        }
       }
     </style>
   </head>
   <body>
     <h1>Select Group by Institute</h1>
 
-    <label for="institute">Choose an Institute:</label>
+    <input
+      type="text"
+      id="searchBox"
+      placeholder="Search institute name..."
+      autocomplete="off"
+    />
     <select id="institute">
       <option value="">-- Select Institute --</option>
     </select>
+    <div id="customDropdown"></div>
 
     <div class="container">
       <section class="programs-section hidden" id="programsSection">
@@ -326,95 +240,126 @@
 
     <script>
       let data = {};
+      let selectedPrograms = [];
+
       const instituteSelect = document.getElementById("institute");
+      const searchBox = document.getElementById("searchBox");
       const programList = document.getElementById("programList");
-      const programsSection = document.getElementById("programsSection");
-      const selectedSection = document.getElementById("selectedSection");
       const selectedProgramList = document.getElementById(
         "selectedProgramList"
       );
+      const programsSection = document.getElementById("programsSection");
+      const selectedSection = document.getElementById("selectedSection");
       const downloadButtons = document.getElementById("downloadButtons");
+      const customDropdown = document.getElementById("customDropdown");
 
-      let selectedPrograms = [];
+      let allInstitutes = [];
 
-      // Load data from external JSON
       fetch("institute_program_data.json")
-        .then((response) => response.json())
+        .then((res) => res.json())
         .then((json) => {
           data = json;
-          for (const institute in data) {
-            const option = document.createElement("option");
-            option.value = institute;
-            option.textContent = institute;
-            instituteSelect.appendChild(option);
-          }
+          allInstitutes = Object.keys(data);
+          // Initially populate the native select (hidden) — if needed elsewhere
+          updateInstituteOptions(allInstitutes);
         });
 
-      // Show offered programs for selected institute
+      function updateInstituteOptions(institutes) {
+        instituteSelect.innerHTML =
+          '<option value="">-- Select Institute --</option>';
+        institutes.forEach((institute) => {
+          const option = document.createElement("option");
+          option.value = institute;
+          option.textContent = institute;
+          instituteSelect.appendChild(option);
+        });
+      }
+
+      // SEARCH BOX INPUT: show filtered custom dropdown items
+      searchBox.addEventListener("input", () => {
+        const query = searchBox.value.toLowerCase().trim();
+        if (!query) {
+          customDropdown.style.display = "none";
+          return;
+        }
+
+        const filtered = allInstitutes.filter((i) =>
+          i.toLowerCase().includes(query)
+        );
+
+        if (filtered.length === 0) {
+          customDropdown.innerHTML =
+            '<div style="padding: 0.5em; color: #888;">No institutes found</div>';
+          customDropdown.style.display = "block";
+          return;
+        }
+
+        customDropdown.innerHTML = filtered
+          .map((inst) => `<div class="dropdown-item">${inst}</div>`)
+          .join("");
+
+        customDropdown.style.display = "block";
+
+        // Add click listeners on dropdown items
+        [...customDropdown.children].forEach((child) => {
+          child.addEventListener("click", () => {
+            searchBox.value = child.textContent;
+            customDropdown.style.display = "none";
+            renderOfferedPrograms(child.textContent);
+          });
+        });
+      });
+
+      // Hide dropdown if clicking outside
+      document.addEventListener("click", (e) => {
+        if (!customDropdown.contains(e.target) && e.target !== searchBox) {
+          customDropdown.style.display = "none";
+        }
+      });
+
+      // You can still select from hidden native select if you want (optional)
       instituteSelect.addEventListener("change", () => {
         renderOfferedPrograms(instituteSelect.value);
       });
 
-      function renderOfferedPrograms(selectedInstitute) {
+      function renderOfferedPrograms(institute) {
         programList.innerHTML = "";
-
-        if (!selectedInstitute || !data[selectedInstitute]) {
+        if (!institute || !data[institute]) {
           programsSection.classList.add("hidden");
           return;
         }
 
-        data[selectedInstitute].forEach((program) => {
+        data[institute].forEach((program) => {
           const li = document.createElement("li");
 
-          const programInfo = document.createElement("div");
-          programInfo.className = "program-info";
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "program-name";
+          nameSpan.textContent = program;
 
-          const programSpan = document.createElement("span");
-          programSpan.className = "program-name";
-          programSpan.textContent = program;
-
-          const instituteSpan = document.createElement("span");
-          instituteSpan.className = "institute-name";
-          instituteSpan.textContent = selectedInstitute;
-
-          programInfo.appendChild(programSpan);
-          programInfo.appendChild(instituteSpan);
-
-          const addRemoveBtn = document.createElement("button");
+          const button = document.createElement("button");
           const isSelected = selectedPrograms.some(
-            (item) =>
-              item.institute === selectedInstitute && item.program === program
+            (p) => p.institute === institute && p.program === program
           );
-          addRemoveBtn.textContent = isSelected ? "Remove" : "Add";
-          addRemoveBtn.style.backgroundColor = isSelected
-            ? "#dc3545"
-            : "#28a745";
-          addRemoveBtn.title = isSelected
-            ? "Remove from selected"
-            : "Add to selected";
-
-          addRemoveBtn.onclick = () => {
+          button.textContent = isSelected ? "Remove" : "Add";
+          button.style.backgroundColor = isSelected ? "#dc3545" : "#28a745";
+          button.onclick = () => {
             if (isSelected) {
               selectedPrograms = selectedPrograms.filter(
-                (item) =>
-                  !(
-                    item.institute === selectedInstitute &&
-                    item.program === program
-                  )
+                (p) => !(p.institute === institute && p.program === program)
               );
             } else {
-              selectedPrograms.push({ institute: selectedInstitute, program });
+              selectedPrograms.push({ institute, program });
             }
             renderSelectedPrograms();
-            renderOfferedPrograms(selectedInstitute);
+            renderOfferedPrograms(institute);
             downloadButtons.classList.toggle(
               "hidden",
               selectedPrograms.length === 0
             );
           };
 
-          li.appendChild(programInfo);
-          li.appendChild(addRemoveBtn);
+          li.appendChild(nameSpan);
+          li.appendChild(button);
           programList.appendChild(li);
         });
 
@@ -434,59 +379,68 @@
         selectedPrograms.forEach((item, index) => {
           const li = document.createElement("li");
 
+          // Container for institute and program stacked vertically
           const infoDiv = document.createElement("div");
-          infoDiv.className = "item-info";
+          infoDiv.style.display = "flex";
+          infoDiv.style.flexDirection = "column";
+          infoDiv.style.flexGrow = "1";
+          infoDiv.style.minWidth = "0";
 
           const instSpan = document.createElement("span");
-          instSpan.className = "selected-institute";
           instSpan.textContent = item.institute;
+          instSpan.style.fontWeight = "700";
+          instSpan.style.fontSize = "1rem";
+          instSpan.style.color = "#007bff";
+          instSpan.style.overflow = "hidden";
+          instSpan.style.textOverflow = "ellipsis";
+          instSpan.style.whiteSpace = "nowrap";
+          instSpan.title = item.institute;
 
           const progSpan = document.createElement("span");
-          progSpan.className = "selected-program-name";
           progSpan.textContent = item.program;
+          progSpan.style.fontSize = "0.9rem";
+          progSpan.style.color = "#222";
+          progSpan.style.overflow = "hidden";
+          progSpan.style.textOverflow = "ellipsis";
+          progSpan.style.whiteSpace = "nowrap";
+          progSpan.title = item.program;
 
           infoDiv.appendChild(instSpan);
           infoDiv.appendChild(progSpan);
 
+          // Buttons container
           const btnGroup = document.createElement("div");
           btnGroup.className = "btn-group";
 
           const upBtn = document.createElement("button");
           upBtn.textContent = "↑";
-          upBtn.title = "Move Up";
           upBtn.disabled = index === 0;
           upBtn.onclick = () => {
-            if (index > 0) {
-              [selectedPrograms[index - 1], selectedPrograms[index]] = [
-                selectedPrograms[index],
-                selectedPrograms[index - 1],
-              ];
-              renderSelectedPrograms();
-            }
+            [selectedPrograms[index - 1], selectedPrograms[index]] = [
+              selectedPrograms[index],
+              selectedPrograms[index - 1],
+            ];
+            renderSelectedPrograms();
           };
 
           const downBtn = document.createElement("button");
           downBtn.textContent = "↓";
-          downBtn.title = "Move Down";
           downBtn.disabled = index === selectedPrograms.length - 1;
           downBtn.onclick = () => {
-            if (index < selectedPrograms.length - 1) {
-              [selectedPrograms[index + 1], selectedPrograms[index]] = [
-                selectedPrograms[index],
-                selectedPrograms[index + 1],
-              ];
-              renderSelectedPrograms();
-            }
+            [selectedPrograms[index + 1], selectedPrograms[index]] = [
+              selectedPrograms[index],
+              selectedPrograms[index + 1],
+            ];
+            renderSelectedPrograms();
           };
 
           const removeBtn = document.createElement("button");
-          removeBtn.textContent = "Remove";
-          removeBtn.title = "Remove this program";
           removeBtn.className = "remove-btn";
+          removeBtn.textContent = "Remove";
           removeBtn.onclick = () => {
             selectedPrograms.splice(index, 1);
             renderSelectedPrograms();
-            renderOfferedPrograms(instituteSelect.value);
+            renderOfferedPrograms(searchBox.value);
             downloadButtons.classList.toggle(
               "hidden",
               selectedPrograms.length === 0
@@ -505,46 +459,52 @@
 
           selectedProgramList.appendChild(li);
         });
+
+        selectedSection.classList.toggle(
+          "hidden",
+          selectedPrograms.length === 0
+        );
+        downloadButtons.classList.toggle(
+          "hidden",
+          selectedPrograms.length === 0
+        );
       }
 
       function downloadExcel() {
-        const XLSX = window.XLSX;
-        if (selectedPrograms.length === 0) {
-          alert("No programs selected!");
-          return;
-        }
-        const ws_data = [["Institute", "Program"]];
-        selectedPrograms.forEach((item) => {
-          ws_data.push([item.institute, item.program]);
-        });
+        if (selectedPrograms.length === 0) return;
+
         const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wsData = [
+          ["Institute", "Program"],
+          ...selectedPrograms.map((p) => [p.institute, p.program]),
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
         XLSX.utils.book_append_sheet(wb, ws, "Selected Programs");
         XLSX.writeFile(wb, "selected_programs.xlsx");
       }
 
-      function downloadPDF() {
-        if (selectedPrograms.length === 0) {
-          alert("No programs selected!");
-          return;
-        }
+      async function downloadPDF() {
+        if (selectedPrograms.length === 0) return;
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text("Selected Programs", 14, 22);
+
+        doc.setFontSize(16);
+        doc.text("Selected Programs", 10, 15);
+
         doc.setFontSize(12);
-        let y = 32;
-        selectedPrograms.forEach((item, i) => {
-          const line = `${i + 1}. Institute: ${item.institute}, Program: ${
-            item.program
-          }`;
-          doc.text(line, 14, y);
+        let y = 25;
+
+        selectedPrograms.forEach((item, index) => {
+          doc.text(`${index + 1}. ${item.institute} - ${item.program}`, 10, y);
           y += 8;
           if (y > 280) {
             doc.addPage();
-            y = 20;
+            y = 15;
           }
         });
+
         doc.save("selected_programs.pdf");
       }
     </script>
